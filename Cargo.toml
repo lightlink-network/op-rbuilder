@@ -17,7 +17,7 @@ resolver = "2"
 # Uncomment this section if you're using a debugger.
 [profile.dev]
 # https://davidlattimore.github.io/posts/2024/02/04/speeding-up-the-rust-edit-build-run-cycle.html
-debug = "line-tables-only"
+debug = "full"
 split-debuginfo = "unpacked"
 
 # Speed up tests.
@@ -40,63 +40,64 @@ codegen-units = 1
 incremental = false
 
 [workspace.dependencies]
-reth = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-chain-state = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-cli = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-cli-commands = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-cli-util = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-db = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-db-common = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-errors = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-payload-builder = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-node-api = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-rpc-engine-api = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-node-ethereum = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-trie = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-trie-parallel = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-basic-payload-builder = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-node-core = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-primitives = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-primitives-traits = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-provider = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede", features = [
+reth = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-chain-state = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-cli = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-cli-commands = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-cli-util = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-db = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-db-common = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-errors = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-payload-builder = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-node-api = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-rpc-engine-api = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-node-ethereum = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-trie = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-trie-parallel = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-basic-payload-builder = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-node-core = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-primitives = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-primitives-traits = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-provider = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan", features = [
     "test-utils",
 ] }
 
-reth-chainspec = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-storage-api = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-rpc-api = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-evm = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-evm-ethereum = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-execution-errors = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-exex = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-tasks = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-metrics = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-trie-db = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-payload-primitives = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-transaction-pool = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-execution-types = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-revm = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-payload-builder-primitives = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-payload-util = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-rpc-layer = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-network-peers = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-testing-utils = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-node-builder = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-rpc-eth-types = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-tracing-otlp = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-ipc = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
+reth-chainspec = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-storage-api = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-rpc-api = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-evm = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-evm-ethereum = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-execution-errors = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-exex = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-tasks = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-metrics = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-trie-db = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-payload-primitives = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-transaction-pool = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-execution-types = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-revm = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-payload-builder-primitives = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-payload-util = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-rpc-layer = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-network-peers = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-testing-utils = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-node-builder = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-rpc-eth-types = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-tracing-otlp = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-ipc = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-rpc = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
 
 # reth optimism
-reth-optimism-primitives = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-optimism-consensus = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-optimism-cli = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-optimism-forks = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-optimism-evm = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-optimism-node = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-optimism-payload-builder = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-optimism-chainspec = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-optimism-txpool = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede" }
-reth-optimism-rpc = { git = "https://github.com/SozinM/reth", rev = "6375ce7bf784345193b45cbf66b0d2f4153edede", features = [
+reth-optimism-primitives = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-optimism-consensus = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-optimism-cli = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-optimism-forks = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-optimism-evm = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-optimism-node = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-optimism-payload-builder = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-optimism-chainspec = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-optimism-txpool = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan" }
+reth-optimism-rpc = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-dan", features = [
     "client",
 ] }
 
@@ -104,6 +105,7 @@ revm = { version = "27.0.3", features = [
     "std",
     "secp256k1",
     "optional_balance_check",
+    "optional_gasless",
 ], default-features = false }
 revm-inspectors = { version = "0.27", default-features = false }
 op-revm = { version = "8.0.2", default-features = false }
@@ -185,3 +187,16 @@ time = { version = "0.3.36", features = ["macros", "formatting", "parsing"] }
 vergen = "9.0.4"
 vergen-git2 = "1.0.5"
 opentelemetry = { version = "0.29.1", features = ["trace"] }
+
+[patch.crates-io]
+revm = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless", default-features = false, features = ["optional_gasless"] }
+revm-primitives = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless" }
+revm-interpreter = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless"}
+revm-handler = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless" }
+revm-context = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless"}
+revm-context-interface = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless"}
+revm-state = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless"}
+revm-database = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless"}
+revm-database-interface = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless"}
+revm-bytecode = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless"}
+revm-inspector = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless"}
