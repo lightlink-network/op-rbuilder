@@ -20,7 +20,7 @@ use reth_optimism_evm::{OpEvmConfig, OpNextBlockEnvAttributes};
 use reth_optimism_forks::OpHardforks;
 use reth_optimism_node::OpPayloadBuilderAttributes;
 use reth_optimism_payload_builder::{config::OpDAConfig, error::OpPayloadBuilderError};
-use reth_optimism_primitives::{OpReceipt, OpTransactionSigned};
+use reth_optimism_primitives::{OpReceipt, OpTransactionSigned, is_gasless};
 use reth_optimism_txpool::{
     conditional::MaybeConditionalTransaction,
     estimated_da_size::DataAvailabilitySized,
@@ -522,11 +522,13 @@ impl<ExtraCtx: Debug + Default> OpPayloadBuilderCtx<ExtraCtx> {
             // commit changes
             evm.db_mut().commit(state);
 
-            // update add to total fees
-            let miner_fee = tx
-                .effective_tip_per_gas(base_fee)
-                .expect("fee is always valid; execution succeeded");
-            info.total_fees += U256::from(miner_fee) * U256::from(gas_used);
+            if !is_gasless(&*tx) {
+                // update add to total fees
+                let miner_fee = tx
+                    .effective_tip_per_gas(base_fee)
+                    .expect("fee is always valid; execution succeeded");
+                info.total_fees += U256::from(miner_fee) * U256::from(gas_used);
+            }
 
             // append sender and transaction to the respective lists
             info.executed_senders.push(tx.signer());
