@@ -40,63 +40,63 @@ codegen-units = 1
 incremental = false
 
 [workspace.dependencies]
-reth = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-chain-state = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-cli = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-cli-commands = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-cli-util = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-db = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-db-common = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-errors = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-payload-builder = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-node-api = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-rpc-engine-api = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-trie = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-trie-parallel = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-basic-payload-builder = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-node-core = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-primitives = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-primitives-traits = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-provider = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628", features = [
+reth = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-chain-state = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-cli = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-cli-commands = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-cli-util = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-db = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-db-common = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-errors = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-payload-builder = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-node-api = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-rpc-engine-api = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-node-ethereum = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-trie = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-trie-parallel = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-basic-payload-builder = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-node-core = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-primitives = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-primitives-traits = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-provider = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2", features = [
     "test-utils",
 ] }
 
-reth-chainspec = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-storage-api = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-rpc-api = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-evm = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-evm-ethereum = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-execution-errors = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-exex = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-tasks = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-metrics = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-trie-db = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-payload-primitives = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-transaction-pool = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-execution-types = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-revm = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-payload-builder-primitives = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-payload-util = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-rpc-layer = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-network-peers = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-testing-utils = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-node-builder = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-tracing-otlp = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-ipc = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
+reth-chainspec = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-storage-api = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-rpc-api = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-evm = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-evm-ethereum = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-execution-errors = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-exex = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-tasks = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-metrics = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-trie-db = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-payload-primitives = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-transaction-pool = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-execution-types = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-revm = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-payload-builder-primitives = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-payload-util = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-rpc-layer = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-network-peers = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-testing-utils = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-node-builder = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-rpc-eth-types = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-tracing-otlp = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-ipc = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
 
 # reth optimism
-reth-optimism-primitives = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-optimism-consensus = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-optimism-cli = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-optimism-forks = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-optimism-evm = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-optimism-node = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-optimism-payload-builder = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-optimism-chainspec = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-optimism-txpool = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628" }
-reth-optimism-rpc = { git = "https://github.com/paradigmxyz/reth", rev = "0fa93840e8f48f97c68ea888dab86b2c7cf49628", features = [
+reth-optimism-primitives = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-optimism-consensus = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-optimism-cli = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-optimism-forks = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-optimism-evm = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-optimism-node = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-optimism-payload-builder = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-optimism-chainspec = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-optimism-txpool = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2" }
+reth-optimism-rpc = { git = "https://github.com/lightlink-network/reth", branch = "feat/gasless-2", features = [
     "client",
 ] }
 
@@ -104,6 +104,7 @@ revm = { version = "28.0.1", features = [
     "std",
     "secp256k1",
     "optional_balance_check",
+    "optional_gasless",
 ], default-features = false }
 revm-inspectors = { version = "0.28.0", default-features = false }
 op-revm = { version = "9.0.1", default-features = false }
@@ -185,3 +186,16 @@ time = { version = "0.3.36", features = ["macros", "formatting", "parsing"] }
 vergen = "9.0.4"
 vergen-git2 = "1.0.5"
 opentelemetry = { version = "0.29.1", features = ["trace"] }
+
+[patch.crates-io]
+revm = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2", default-features = false, features = ["optional_gasless"] }
+revm-primitives = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2" }
+revm-interpreter = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2"}
+revm-handler = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2" }
+revm-context = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2"}
+revm-context-interface = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2"}
+revm-state = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2"}
+revm-database = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2"}
+revm-database-interface = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2"}
+revm-bytecode = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2"}
+revm-inspector = { git = "https://github.com/lightlink-network/revm", branch = "feat/gasless-2"}
