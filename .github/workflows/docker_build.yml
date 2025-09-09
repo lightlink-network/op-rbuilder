@@ -47,9 +47,7 @@ jobs:
       matrix:
         configs:
           - target: linux/amd64
-            runner: warp-ubuntu-latest-x64-16x
-          - target: linux/arm64
-            runner: warp-ubuntu-latest-arm64-16x
+            runner: ubuntu-latest
     steps:
       - name: checkout sources
         uses: actions/checkout@v4
