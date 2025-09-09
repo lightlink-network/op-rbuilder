@@ -12,7 +12,7 @@ on:
 jobs:
   extract-version:
     name: Extract version
-    runs-on: warp-ubuntu-latest-x64-16x
+    runs-on: ubuntu-latest
     outputs:
       VERSION: ${{ steps.extract_version.outputs.VERSION }}
     steps:
