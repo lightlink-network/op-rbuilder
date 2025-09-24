@@ -78,5 +78,3 @@ FROM gcr.io/distroless/cc-debian12 AS rbuilder-runtime
 ARG RBUILDER_BIN
 WORKDIR /app
 COPY --from=rbuilder /app/target/release/${RBUILDER_BIN} /app/rbuilder
-ENTRYPOINT ["/app/rbuilder"]
-
