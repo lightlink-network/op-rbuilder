@@ -3,90 +3,193 @@ name: Docker Build Release
 on:
   push:
     branches:
-      - lightlink # Trigger the workflow on pushes to the main branch
+      - lightlink
+      - main
     tags:
-      - "**" # Trigger the workflow on tags including hierarchical tags like v1.0/beta
+      - "v*"
   pull_request:
-    types: [opened, synchronize] # Trigger the workflow when a PR is opened or updated
+    types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      features:
+        description: "Rust features to enable"
+        required: false
+        default: ""
+      push_image:
+        description: "Push image to registry"
+        type: boolean
+        default: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  extract-version:
-    name: Extract version
+  extract-metadata:
+    name: Extract metadata
     runs-on: ubuntu-latest
     outputs:
-      VERSION: ${{ steps.extract_version.outputs.VERSION }}
+      version: ${{ steps.meta.outputs.version }}
+      tags: ${{ steps.meta.outputs.tags }}
+      labels: ${{ steps.meta.outputs.labels }}
+      primary-tag: ${{ steps.primary-tag.outputs.tag }}
+      should-push: ${{ steps.push-decision.outputs.should-push }}
     steps:
-      - name: Extract version
-        id: extract_version
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-,format=short
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value={{branch}},enable=${{ github.event_name != 'pull_request' }}
+            type=raw,value=commit-{{sha}},format=short
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created={{date 'iso8601'}}
+
+      - name: Get primary tag
+        id: primary-tag
         run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            VERSION="${GITHUB_REF#refs/tags/}"
-          else
-            VERSION="$(echo ${GITHUB_SHA} | cut -c1-7)"
+          # Get the first tag from metadata, with fallback
+          primary_tag=$(echo '${{ steps.meta.outputs.tags }}' | head -n1)
+
+          # If no tags generated, create a fallback based on event type
+          if [ -z "$primary_tag" ]; then
+            case "${{ github.event_name }}" in
+              "pull_request")
+                primary_tag="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.number }}"
+                ;;
+              "push")
+                branch_name=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')
+                primary_tag="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${branch_name}-${{ github.sha }}"
+                ;;
+              *)
+                primary_tag="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+                ;;
+            esac
           fi
-          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
 
-          echo "|                     |                        |" >> $GITHUB_STEP_SUMMARY
-          echo "| ------------------- | ---------------------- |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`GITHUB_REF_TYPE\` | \`${GITHUB_REF_TYPE}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`GITHUB_REF_NAME\` | \`${GITHUB_REF_NAME}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`GITHUB_REF\`      | \`${GITHUB_REF}\`      |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`GITHUB_SHA\`      | \`${GITHUB_SHA}\`      |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`VERSION\`         | \`${VERSION}\`         |" >> $GITHUB_STEP_SUMMARY
+          echo "tag=$primary_tag" >> $GITHUB_OUTPUT
+          echo "Using primary tag: $primary_tag"
 
-  build-docker:
-    name: Build and publish Docker image
-    needs: extract-version
-    runs-on: ${{ matrix.configs.runner }}
-    env:
-      VERSION: ${{ needs.extract-version.outputs.VERSION }}
+      - name: Decide whether to push
+        id: push-decision
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            should_push="false"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            should_push="${{ inputs.push_image }}"
+          else
+            should_push="true"
+          fi
+          echo "should-push=${should_push}" >> $GITHUB_OUTPUT
+
+      - name: Show generated tags (debug)
+        run: |
+          echo "All generated tags:"
+          echo '${{ steps.meta.outputs.tags }}'
+          echo ""
+          echo "Primary tag: ${{ steps.primary-tag.outputs.tag }}"
+          echo "Should push: ${{ steps.push-decision.outputs.should-push }}"
+
+  lint-dockerfile:
+    name: Lint Dockerfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: DockerfileOp
+          failure-threshold: warning
+
+  build-and-push:
+    name: Build and push Docker image
+    needs: [extract-metadata, lint-dockerfile]
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
     permissions:
       contents: read
       packages: write
-    strategy:
-      matrix:
-        configs:
-          - target: linux/amd64
-            runner: ubuntu-latest
-          - target: linux/arm64
-            runner: ubuntu-latest
+    env:
+      SHOULD_PUSH: ${{ needs.extract-metadata.outputs.should-push }}
     steps:
-      - name: checkout sources
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: docker qemu
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: docker buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: docker metadata
-        uses: docker/metadata-action@v5
-        id: meta
-        with:
-          images: ghcr.io/${{ github.repository }}
-          labels: org.opencontainers.image.source=${{ github.repositoryUrl }}
-          tags: |
-            type=sha
-            type=schedule,pattern=nightly
-
-      - name: docker login
+      - name: Log in to Container Registry
+        if: env.SHOULD_PUSH == 'true'
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: docker build and push op-rbuilder
+      - name: Build and push Docker image
+        id: build
         uses: docker/build-push-action@v5
         with:
+          context: .
+          file: DockerfileOp
+          platforms: linux/amd64,linux/arm64
+          push: ${{ env.SHOULD_PUSH == 'true' }}
+          tags: ${{ needs.extract-metadata.outputs.tags }}
+          labels: ${{ needs.extract-metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          file: DockerfileOp
-          context: .
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: ${{ matrix.configs.target }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
           build-args: |
             RBUILDER_BIN=op-rbuilder
+            FEATURES=${{ inputs.features || '' }}
+
+  security-scan:
+    name: Security scan
+    needs: [build-and-push, extract-metadata]
+    if: needs.extract-metadata.outputs.should-push == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ needs.extract-metadata.outputs.primary-tag }}
+          format: "sarif"
+          output: "trivy-results.sarif"
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-results.sarif"
+
+  test-image:
+    name: Test Docker image
+    needs: [build-and-push, extract-metadata]
+    if: needs.extract-metadata.outputs.should-push == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test image
+        run: |
+          docker run --rm ${{ needs.extract-metadata.outputs.primary-tag }} --version
