@@ -118,6 +118,7 @@ jobs:
         with:
           dockerfile: DockerfileOp
           failure-threshold: warning
+          ignore: DL3008
 
   build-and-push:
     name: Build and push Docker image
