@@ -4,9 +4,14 @@ WORKDIR /app
 LABEL org.opencontainers.image.source=https://github.com/flashbots/op-rbuilder
 LABEL org.opencontainers.image.licenses="MIT OR Apache-2.0"
 
-RUN apt-get update && apt-get -y upgrade && apt-get install -y libclang-dev pkg-config libtss2-dev
-
-RUN cargo install cargo-chef --locked
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get install -y --no-install-recommends \
+        libclang-dev \
+        pkg-config \
+        libtss2-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    cargo install cargo-chef --locked
 
 FROM chef AS planner
 COPY . .
@@ -27,15 +32,18 @@ ARG RBUILDER_BIN="op-rbuilder"
 RUN cargo chef cook --profile $BUILD_PROFILE --recipe-path recipe.json
 
 COPY . .
-RUN cargo build --profile $BUILD_PROFILE --bin $RBUILDER_BIN --package $RBUILDER_BIN --features="$FEATURES"
-
-RUN ls -la /app/target/$BUILD_PROFILE/$RBUILDER_BIN
-RUN cp /app/target/$BUILD_PROFILE/$RBUILDER_BIN /app/op-rbuilder
+RUN cargo build --profile $BUILD_PROFILE --bin $RBUILDER_BIN --package $RBUILDER_BIN --features="$FEATURES" && \
+    ls -la /app/target/$BUILD_PROFILE/$RBUILDER_BIN && \
+    cp /app/target/$BUILD_PROFILE/$RBUILDER_BIN /app/op-rbuilder
 
 FROM ubuntu:22.04 AS runtime
 
 RUN apt-get update && \
-    apt-get install -y ca-certificates libssl-dev pkg-config strace && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        libssl-dev \
+        pkg-config \
+        strace && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
