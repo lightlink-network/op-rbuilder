@@ -27,7 +27,7 @@ env:
 jobs:
   extract-metadata:
     name: Extract metadata
-    runs-on: ubuntu-latest
+    runs-on: Large
     outputs:
       version: ${{ steps.meta.outputs.version }}
       tags: ${{ steps.meta.outputs.tags }}
