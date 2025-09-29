@@ -121,7 +121,6 @@ jobs:
     name: Build and push Docker image
     needs: [extract-metadata, lint-dockerfile]
     runs-on: ubuntu-latest
-    timeout-minutes: 120
     permissions:
       contents: read
       packages: write
