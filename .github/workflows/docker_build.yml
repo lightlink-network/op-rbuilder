@@ -15,10 +15,6 @@ on:
         description: "Rust features to enable"
         required: false
         default: ""
-      push_image:
-        description: "Push image to registry"
-        type: boolean
-        default: false
 
 env:
   REGISTRY: ghcr.io
@@ -87,13 +83,15 @@ jobs:
       - name: Decide whether to push
         id: push-decision
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            should_push="false"
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            should_push="${{ inputs.push_image }}"
-          else
-            should_push="true"
-          fi
+          # Always push images for all event types
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Event type: ${{ github.ref_type }}"
+
+          should_push="true"
+          echo "Always pushing images - configured to push for all events"
+
+          echo "Final decision: should_push=${should_push}"
           echo "should-push=${should_push}" >> $GITHUB_OUTPUT
 
       - name: Show generated tags (debug)
@@ -154,7 +152,7 @@ jobs:
           context: .
           file: DockerfileOp
           platforms: linux/amd64,linux/arm64
-          push: ${{ env.SHOULD_PUSH == 'true' }}
+          push: ${{ needs.extract-metadata.outputs.should-push == 'true' }}
           tags: ${{ needs.extract-metadata.outputs.tags }}
           labels: ${{ needs.extract-metadata.outputs.labels }}
           cache-from: type=gha
@@ -162,6 +160,13 @@ jobs:
           build-args: |
             RBUILDER_BIN=op-rbuilder
             FEATURES=${{ inputs.features || '' }}
+
+      - name: Show build results (debug)
+        run: |
+          echo "Push decision: ${{ needs.extract-metadata.outputs.should-push }}"
+          echo "Push boolean: ${{ needs.extract-metadata.outputs.should-push == 'true' }}"
+          echo "Build digest: ${{ steps.build.outputs.digest }}"
+          echo "Build metadata: ${{ steps.build.outputs.metadata }}"
 
   security-scan:
     name: Security scan
