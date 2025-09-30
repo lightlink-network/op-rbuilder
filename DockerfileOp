@@ -29,6 +29,11 @@ ENV RUSTFLAGS="$RUSTFLAGS"
 ARG FEATURES=""
 ARG RBUILDER_BIN="op-rbuilder"
 
+# Optimize Rust compilation for CI
+ENV CARGO_BUILD_JOBS=0
+ENV CARGO_INCREMENTAL=0
+ENV RUST_BACKTRACE=1
+
 RUN cargo chef cook --profile $BUILD_PROFILE --recipe-path recipe.json
 
 COPY . .

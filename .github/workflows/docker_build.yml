@@ -27,7 +27,8 @@ env:
 jobs:
   extract-metadata:
     name: Extract metadata
-    runs-on: Large
+    runs-on:
+      labels: Large
     outputs:
       version: ${{ steps.meta.outputs.version }}
       tags: ${{ steps.meta.outputs.tags }}
@@ -120,7 +121,8 @@ jobs:
   build-and-push:
     name: Build and push Docker image
     needs: [extract-metadata, lint-dockerfile]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-8-cores
+    timeout-minutes: 60
     permissions:
       contents: read
       packages: write
