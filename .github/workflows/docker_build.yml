@@ -106,7 +106,8 @@ jobs:
 
   lint-dockerfile:
     name: Lint Dockerfile
-    runs-on: ubuntu-latest
+    runs-on:
+      labels: Large
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -121,8 +122,8 @@ jobs:
   build-and-push:
     name: Build and push Docker image
     needs: [extract-metadata, lint-dockerfile]
-    runs-on: ubuntu-latest-8-cores
-    timeout-minutes: 60
+    runs-on:
+      labels: Large
     permissions:
       contents: read
       packages: write
@@ -166,7 +167,8 @@ jobs:
     name: Security scan
     needs: [build-and-push, extract-metadata]
     if: needs.extract-metadata.outputs.should-push == 'true'
-    runs-on: ubuntu-latest
+    runs-on:
+      labels: Large
     permissions:
       contents: read
       security-events: write
@@ -187,7 +189,8 @@ jobs:
     name: Test Docker image
     needs: [build-and-push, extract-metadata]
     if: needs.extract-metadata.outputs.should-push == 'true'
-    runs-on: ubuntu-latest
+    runs-on:
+      labels: Large
     steps:
       - name: Test image
         run: |
