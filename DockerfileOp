@@ -29,15 +29,22 @@ ENV RUSTFLAGS="$RUSTFLAGS"
 ARG FEATURES=""
 ARG RBUILDER_BIN="op-rbuilder"
 
-# Optimize Rust compilation for CI
-ENV CARGO_BUILD_JOBS=0
+# Optimize Rust compilation for 16-core CI runner
 ENV CARGO_INCREMENTAL=0
 ENV RUST_BACKTRACE=1
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+
+# Use faster linker and configure for high-core builds
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        apt-get update && apt-get install -y --no-install-recommends lld && rm -rf /var/lib/apt/lists/* && \
+        echo '[target.x86_64-unknown-linux-gnu]\nrustflags = ["-C", "link-arg=-fuse-ld=lld"]' >> /usr/local/cargo/config.toml; \
+    fi
 
 RUN cargo chef cook --profile $BUILD_PROFILE --recipe-path recipe.json
 
 COPY . .
-RUN cargo build --profile $BUILD_PROFILE --bin $RBUILDER_BIN --package $RBUILDER_BIN --features="$FEATURES" && \
+RUN CARGO_BUILD_JOBS=16 cargo build --profile $BUILD_PROFILE --bin $RBUILDER_BIN --package $RBUILDER_BIN --features="$FEATURES" && \
     ls -la /app/target/$BUILD_PROFILE/$RBUILDER_BIN && \
     cp /app/target/$BUILD_PROFILE/$RBUILDER_BIN /app/op-rbuilder
 
