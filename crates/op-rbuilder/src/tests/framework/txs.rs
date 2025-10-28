@@ -1,5 +1,6 @@
 use crate::{
     primitives::bundle::{Bundle, BundleResult},
+    tests::funded_signer,
     tx::FBPooledTransaction,
     tx_signer::Signer,
 };
@@ -21,16 +22,46 @@ use tracing::debug;
 
 use alloy_eips::eip1559::MIN_PROTOCOL_BASE_FEE;
 
-use super::FUNDED_PRIVATE_KEYS;
-
 #[derive(Clone, Copy, Default)]
 pub struct BundleOpts {
-    pub block_number_min: Option<u64>,
-    pub block_number_max: Option<u64>,
-    pub flashblock_number_min: Option<u64>,
-    pub flashblock_number_max: Option<u64>,
-    pub min_timestamp: Option<u64>,
-    pub max_timestamp: Option<u64>,
+    block_number_min: Option<u64>,
+    block_number_max: Option<u64>,
+    flashblock_number_min: Option<u64>,
+    flashblock_number_max: Option<u64>,
+    min_timestamp: Option<u64>,
+    max_timestamp: Option<u64>,
+}
+
+impl BundleOpts {
+    pub fn with_block_number_min(mut self, block_number_min: u64) -> Self {
+        self.block_number_min = Some(block_number_min);
+        self
+    }
+
+    pub fn with_block_number_max(mut self, block_number_max: u64) -> Self {
+        self.block_number_max = Some(block_number_max);
+        self
+    }
+
+    pub fn with_flashblock_number_min(mut self, flashblock_number_min: u64) -> Self {
+        self.flashblock_number_min = Some(flashblock_number_min);
+        self
+    }
+
+    pub fn with_flashblock_number_max(mut self, flashblock_number_max: u64) -> Self {
+        self.flashblock_number_max = Some(flashblock_number_max);
+        self
+    }
+
+    pub fn with_min_timestamp(mut self, min_timestamp: u64) -> Self {
+        self.min_timestamp = Some(min_timestamp);
+        self
+    }
+
+    pub fn with_max_timestamp(mut self, max_timestamp: u64) -> Self {
+        self.max_timestamp = Some(max_timestamp);
+        self
+    }
 }
 
 #[derive(Clone)]
@@ -42,7 +73,6 @@ pub struct TransactionBuilder {
     tx: TxEip1559,
     bundle_opts: Option<BundleOpts>,
     with_reverted_hash: bool,
-    key: Option<u64>,
 }
 
 impl TransactionBuilder {
@@ -59,7 +89,6 @@ impl TransactionBuilder {
             },
             bundle_opts: None,
             with_reverted_hash: false,
-            key: None,
         }
     }
 
@@ -70,11 +99,6 @@ impl TransactionBuilder {
 
     pub fn with_create(mut self) -> Self {
         self.tx.to = TxKind::Create;
-        self
-    }
-
-    pub fn with_key(mut self, key: u64) -> Self {
-        self.key = Some(key);
         self
     }
 
@@ -134,14 +158,7 @@ impl TransactionBuilder {
     }
 
     pub async fn build(mut self) -> Recovered<OpTxEnvelope> {
-        let signer = self.signer.unwrap_or_else(|| {
-            Signer::try_from_secret(
-                FUNDED_PRIVATE_KEYS[self.key.unwrap_or(0) as usize]
-                    .parse()
-                    .expect("invalid hardcoded builder private key"),
-            )
-            .expect("Failed to create signer from hardcoded private key")
-        });
+        let signer = self.signer.unwrap_or(funded_signer());
 
         let nonce = match self.nonce {
             Some(nonce) => nonce,
@@ -197,8 +214,8 @@ impl TransactionBuilder {
                 },
                 block_number_min: bundle_opts.block_number_min,
                 block_number_max: bundle_opts.block_number_max,
-                flashblock_number_min: bundle_opts.block_number_min,
-                flashblock_number_max: bundle_opts.block_number_max,
+                flashblock_number_min: bundle_opts.flashblock_number_min,
+                flashblock_number_max: bundle_opts.flashblock_number_max,
                 min_timestamp: bundle_opts.min_timestamp,
                 max_timestamp: bundle_opts.max_timestamp,
             };
