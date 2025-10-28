@@ -104,13 +104,6 @@ RUN case "$TARGETPLATFORM" in \
     CXXFLAGS="-D__TIME__=\"\" -D__DATE__=\"\"" \
     cargo build --release --locked --features="$FEATURES" --package=${RBUILDER_BIN} --target "${ARCH_TAG}"
 
-# Runtime container for rbuilder
-FROM gcr.io/distroless/cc-debian12 AS rbuilder-runtime
-ARG RBUILDER_BIN
-WORKDIR /app
-COPY --from=rbuilder /app/target/release/${RBUILDER_BIN} /app/rbuilder
-ENTRYPOINT ["/app/rbuilder"]
-
 # Reproducible runtime container for rbuilder
 FROM gcr.io/distroless/cc-debian12 AS rbuilder-reproducible-runtime
 ARG RBUILDER_BIN

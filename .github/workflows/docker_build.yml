@@ -1,0 +1,202 @@
+name: Docker Build Release
+
+on:
+  push:
+    branches:
+      - lightlink
+      - main
+    tags:
+      - "v*"
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      features:
+        description: "Rust features to enable"
+        required: false
+        default: ""
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  extract-metadata:
+    name: Extract metadata
+    runs-on:
+      labels: Large
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tags: ${{ steps.meta.outputs.tags }}
+      labels: ${{ steps.meta.outputs.labels }}
+      primary-tag: ${{ steps.primary-tag.outputs.tag }}
+      should-push: ${{ steps.push-decision.outputs.should-push }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created={{date 'iso8601'}}
+
+      - name: Get primary tag
+        id: primary-tag
+        run: |
+          # Get the first tag from metadata, with fallback
+          primary_tag=$(echo '${{ steps.meta.outputs.tags }}' | head -n1)
+
+          # If no tags generated, create a fallback based on event type
+          if [ -z "$primary_tag" ]; then
+            case "${{ github.event_name }}" in
+              "pull_request")
+                primary_tag="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.number }}"
+                ;;
+              "push")
+                branch_name=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')
+                primary_tag="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${branch_name}-${{ github.sha }}"
+                ;;
+              *)
+                primary_tag="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+                ;;
+            esac
+          fi
+
+          echo "tag=$primary_tag" >> $GITHUB_OUTPUT
+          echo "Using primary tag: $primary_tag"
+
+      - name: Decide whether to push
+        id: push-decision
+        run: |
+          # Always push images for all event types
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Event type: ${{ github.ref_type }}"
+
+          should_push="true"
+          echo "Always pushing images - configured to push for all events"
+
+          echo "Final decision: should_push=${should_push}"
+          echo "should-push=${should_push}" >> $GITHUB_OUTPUT
+
+      - name: Show generated tags (debug)
+        run: |
+          echo "All generated tags:"
+          echo '${{ steps.meta.outputs.tags }}'
+          echo ""
+          echo "Primary tag: ${{ steps.primary-tag.outputs.tag }}"
+          echo "Should push: ${{ steps.push-decision.outputs.should-push }}"
+
+  lint-dockerfile:
+    name: Lint Dockerfile
+    runs-on:
+      labels: Large
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: DockerfileOp
+          failure-threshold: warning
+          ignore: DL3008
+
+  build-and-push:
+    name: Build and push Docker image
+    needs: [extract-metadata, lint-dockerfile]
+    runs-on:
+      labels: Large
+    permissions:
+      contents: read
+      packages: write
+    env:
+      SHOULD_PUSH: ${{ needs.extract-metadata.outputs.should-push }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: env.SHOULD_PUSH == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: DockerfileOp
+          platforms: linux/amd64,linux/arm64
+          push: ${{ needs.extract-metadata.outputs.should-push == 'true' }}
+          tags: ${{ needs.extract-metadata.outputs.tags }}
+          labels: ${{ needs.extract-metadata.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            RBUILDER_BIN=op-rbuilder
+            FEATURES=${{ inputs.features || '' }}
+
+      - name: Show build results (debug)
+        run: |
+          echo "Push decision: ${{ needs.extract-metadata.outputs.should-push }}"
+          echo "Push boolean: ${{ needs.extract-metadata.outputs.should-push == 'true' }}"
+          echo "Build digest: ${{ steps.build.outputs.digest }}"
+          echo "Build metadata: ${{ steps.build.outputs.metadata }}"
+
+  security-scan:
+    name: Security scan
+    needs: [build-and-push, extract-metadata]
+    if: needs.extract-metadata.outputs.should-push == 'true'
+    runs-on:
+      labels: Large
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ needs.extract-metadata.outputs.primary-tag }}
+          format: "sarif"
+          output: "trivy-results.sarif"
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-results.sarif"
+
+  test-image:
+    name: Test Docker image
+    needs: [build-and-push, extract-metadata]
+    if: needs.extract-metadata.outputs.should-push == 'true'
+    runs-on:
+      labels: Large
+    steps:
+      - name: Test image
+        run: |
+          docker run --rm ${{ needs.extract-metadata.outputs.primary-tag }} --version

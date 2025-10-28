@@ -1,0 +1,67 @@
+FROM rust:1.88 AS chef
+WORKDIR /app
+
+LABEL org.opencontainers.image.source=https://github.com/flashbots/op-rbuilder
+LABEL org.opencontainers.image.licenses="MIT OR Apache-2.0"
+
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get install -y --no-install-recommends \
+        libclang-dev \
+        pkg-config \
+        libtss2-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    cargo install cargo-chef --locked
+
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+
+ARG BUILD_PROFILE=release
+ENV BUILD_PROFILE=$BUILD_PROFILE
+
+ARG RUSTFLAGS=""
+ENV RUSTFLAGS="$RUSTFLAGS"
+
+ARG FEATURES=""
+ARG RBUILDER_BIN="op-rbuilder"
+
+# Optimize Rust compilation for 16-core CI runner
+ENV CARGO_INCREMENTAL=0
+ENV RUST_BACKTRACE=1
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+
+# Use faster linker and configure for high-core builds
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        apt-get update && apt-get install -y --no-install-recommends lld && rm -rf /var/lib/apt/lists/* && \
+        echo '[target.x86_64-unknown-linux-gnu]\nrustflags = ["-C", "link-arg=-fuse-ld=lld"]' >> /usr/local/cargo/config.toml; \
+    fi
+
+RUN cargo chef cook --profile $BUILD_PROFILE --recipe-path recipe.json
+
+COPY . .
+RUN CARGO_BUILD_JOBS=16 cargo build --profile $BUILD_PROFILE --bin $RBUILDER_BIN --package $RBUILDER_BIN --features="$FEATURES" && \
+    ls -la /app/target/$BUILD_PROFILE/$RBUILDER_BIN && \
+    cp /app/target/$BUILD_PROFILE/$RBUILDER_BIN /app/op-rbuilder
+
+FROM ubuntu:22.04 AS runtime
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        libssl-dev \
+        pkg-config \
+        strace && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=builder /app/op-rbuilder /usr/local/bin/op-rbuilder
+RUN chmod +x /usr/local/bin/op-rbuilder
+COPY LICENSE-* ./
+
+EXPOSE 30303 30303/udp 9001 8545 8546 7545 8551
+ENTRYPOINT ["/usr/local/bin/op-rbuilder"]
